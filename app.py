@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def welcome():
-    return "Welcome to rmobileViT inference api"
+    return "MobileViT for tomato crop disease classification"
 
 from controller import *
 

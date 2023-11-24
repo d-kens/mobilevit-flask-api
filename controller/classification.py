@@ -1,12 +1,12 @@
 from app import app
-from model.classification_model import classification_model
+from model.classification import classification
 from flask import request, send_file, jsonify
 from utils.helper_functions import generate_image_filepath
 
-classification_object = classification_model()
+classification_object = classification()
 
 @app.route('/classify', methods=['POST'])
-def predict_controller():
+def classify():
     # get uploaded image
     file = request.files.get('image')
     if file is None or file.filename == "":
@@ -15,6 +15,5 @@ def predict_controller():
     # generate filepath for the image
     filePath = generate_image_filepath(file)
 
-    
     return classification_object.classify_image(file, filePath)
     
