@@ -1,0 +1,23 @@
+Apps Logic (How it work)
+1. Client sends an image to get it class class label
+2. The image is
+    - Processed 
+    - Fed to the MobileViT model for classification
+3. The classification result is saved to the database together with the predicted class
+4. The classification result is returned to the user.
+
+
+
+
+-------------------------
+Logic Implementation
+--------------------------
+1. route: getClass
+2. controller (handles the logic)
+   - get the image
+   - preprocess the image
+   - classify the image 
+   - call model to save image and classification result
+   - return the classificationresult to the user
+3. model
+   - save image and prediction result in the database
