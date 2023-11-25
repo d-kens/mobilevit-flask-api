@@ -1,8 +1,8 @@
-## Image Classification API
+## A Simple MobileViT Image Classification API
 
 ### Overview
 
-This Flask application serves as an API for image classification using a pre-trained deep learning model. It allows users to upload images and receive predictions about the class of the image, such as whether it depicts a type of plant disease or is considered healthy.
+This Flask application serves as an API for image classification using a pre-trained deep learning model, MobileViT. It allows users to upload tomato leaf images and receive predictions about the class of the image, such as whether it depicts a type of plant disease (early blight, late blight or septoria leaf spot) or is considered healthy.
 
 ### Components
 
