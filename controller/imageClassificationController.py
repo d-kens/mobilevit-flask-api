@@ -13,7 +13,7 @@ def allowed_file(filename):
 
 
 @app.route('/classify-image', methods=['POST'])
-def getImageClass():
+def get_image_class():
     try:
         # get uploaded image
         file = request.files.get('image')
@@ -27,7 +27,7 @@ def getImageClass():
         
         # Save the image
         file.save(filepath)
-        return imageClassifier.imageClass(filepath)
+        return imageClassifier.image_class(filepath)
     except Exception as e:
         # Log the exception for debugging
         print(f"An error occurred: {e}")

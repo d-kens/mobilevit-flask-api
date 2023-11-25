@@ -22,7 +22,7 @@ class imageClassification():
             print(f"Error connecting to the database: {e}")
 
     
-    def classifyImage(self, filepath):
+    def classify_image(self, filepath):
         try:
             # Use PIL to open the image directly from the file path
             image = Image.open(filepath)
@@ -61,10 +61,10 @@ class imageClassification():
 
     
 
-    def imageClass(self, filepath):
+    def image_class(self, filepath):
         try:
             # get image class
-            class_index = self.classifyImage(filepath);
+            class_index = self.classify_image(filepath);
 
             # class dictionary
             class_dictionary = { 0: 'early blight', 1: 'late blight', 2: 'septoria leaf spot', 3: 'healthy'}
@@ -73,7 +73,7 @@ class imageClassification():
             class_label = class_dictionary.get(class_index, 'Unknown Class')
 
             # save classification result
-            success = self.saveClassificationResult(filepath, class_label)
+            success = self.save_classification_result(filepath, class_label)
             
             # Extract the file name from the path
             filename = os.path.basename(filepath)
@@ -91,7 +91,7 @@ class imageClassification():
     
 
 
-    def saveClassificationResult(self, filepath, result):
+    def save_classification_result(self, filepath, result):
         try: 
             # Insert the classification result into the 'result' table
             query = "INSERT INTO classification_result (result) VALUES (%s)"

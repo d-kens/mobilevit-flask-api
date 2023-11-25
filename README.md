@@ -8,7 +8,7 @@ This Flask application serves as an API for image classification using a pre-tra
 
 #### Controller (`imageClassificationController.py`)
 
-- **`getImageClass` Endpoint:**
+- **`get_image_class` Endpoint:**
   - **HTTP Method:** POST
   - **Path:** `/classify-image`
   - **Description:** Accepts an image file upload and returns the predicted class label along with additional information.
@@ -23,9 +23,9 @@ This Flask application serves as an API for image classification using a pre-tra
 - **`imageClassification` Class:**
   - **Initialization:** Establishes a connection to a MySQL database for storing classification results.
   - **Methods:**
-    - `classifyImage(filepath)`: Utilizes a pre-trained deep learning model to classify an image based on the provided file path.
-    - `imageClass(filepath)`: Invokes `classifyImage` and saves the classification result to the database, returning a response to the user.
-    - `saveClassificationResult(filepath, result)`: Inserts the classification result and associated image details into the MySQL database.
+    - `classify_image(filepath)`: Utilizes a pre-trained deep learning model to classify an image based on the provided file path.
+    - `image_class(filepath)`: Invokes `classify_image` and saves the classification result to the database, returning a response to the user.
+    - `save_classification_result(filepath, result)`: Inserts the classification result and associated image details into the MySQL database.
 
 ### Setup and Dependencies
 
