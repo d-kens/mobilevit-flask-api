@@ -1,10 +1,17 @@
-from flask import Flask, request, jsonify
+from flask import Flask
+from extentions import db
+from image_classification import classification_blueprint
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-@app.route("/")
-def welcome():
-    return "MobileViT for tomato crop disease classification"
+    app.config.from_prefixed_env()
 
-from controller import *
+    # initialize extensions
+    db.init_app(app)
+
+    # register blueprints
+    app.register_blueprint(classification_blueprint, url_prefix="/image_classification")
+
+    return app
 
