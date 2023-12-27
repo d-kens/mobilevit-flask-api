@@ -58,7 +58,6 @@ class ClassificationResult(db.Model):
 
             # Apply softmax to convert logits to probabilities
             probabilities = F.softmax(logits, dim=1)
-            print(probabilities)
 
             # single class label
             class_index = probabilities.argmax(dim=1).item()
@@ -76,10 +75,20 @@ class ClassificationResult(db.Model):
             print(f"Error classifying image: {e}")
             raise  # Re-raise the exception to propagate it to the caller
 
+
+    @classmethod
+    def get_results_by_user_id(cls, user_id):
+        result = cls.query.filter_by(user_id=user_id).all()
+        return result
+
     
-    def save_classification_result(self, filepath, result):
+    
+    def save(self):
         db.session.add(self)
         db.session.commit()
+
+
+    
 
 
 
