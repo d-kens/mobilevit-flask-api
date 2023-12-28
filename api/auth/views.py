@@ -71,7 +71,7 @@ class Login(Resource):
     @auth_namespace.expect(login_model)
     def post(self):
         """
-             generate jwt pair
+            generate jwt pair
         """
         try:
             data = request.get_json()
@@ -102,6 +102,9 @@ class Login(Resource):
 class Refresh(Resource):
     @jwt_required(refresh=True)
     def post(self):
+        """
+            refresh access token
+        """
         username = get_jwt_identity()
 
         access_token = create_access_token(identity=username)

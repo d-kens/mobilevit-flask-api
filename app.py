@@ -1,17 +1,8 @@
-from flask import Flask
-from extentions import db
-from image_classification import classification_blueprint
+from api import create_app
 
-def create_app():
-    app = Flask(__name__)
+app = create_app()
 
-    app.config.from_prefixed_env()
 
-    # initialize extensions
-    db.init_app(app)
-
-    # register blueprints
-    app.register_blueprint(classification_blueprint, url_prefix="/image_classification")
-
-    return app
+if __name__ == "__main__":
+    app.run
 
