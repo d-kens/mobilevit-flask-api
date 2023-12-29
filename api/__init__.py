@@ -8,9 +8,11 @@ from .models.users import User
 from .models.classification_results import ClassificationResult
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+import os
 
 def create_app(config=config_dict['dev']):
-    app=Flask(__name__)
+    app=Flask(__name__, static_folder=os.path.abspath('api/uploads/'), static_url_path='/api/uploads')
+
 
     app.config.from_object(config)
 
@@ -32,6 +34,5 @@ def create_app(config=config_dict['dev']):
             'User': User,
             'ClassificationResult': ClassificationResult
         }
-
 
     return app
