@@ -1,16 +1,19 @@
 import io
 import os
-import torch
-from ..utils import db
 from datetime import datetime
 from PIL import Image 
-from datetime import datetime
-import torch.nn.functional as F
+
 from transformers import AutoImageProcessor
+import torch
+import torch.nn.functional as F
 import torchvision.transforms as transforms
+from ..utils import db
+
+
 image_processor = AutoImageProcessor.from_pretrained("apple/mobilevitv2-1.0-imagenet1k-256")
 
 class ClassificationResult(db.Model):
+
     __tablename__='classification_results'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,21 +29,22 @@ class ClassificationResult(db.Model):
 
     @classmethod
     def generate_image_filepath(cls, file):
-        uniqueFileName = str(datetime.now().timestamp()).replace(".", "") # generate unique image name
-        fileNameSplit = file.filename.split(".")
-        fileExt = fileNameSplit[len(fileNameSplit)-1]
-        file_path = f"api/uploads/{uniqueFileName}.{fileExt}"
+        """Generate a unique image filepath"""
+        unique_file_name = str(datetime.now().timestamp()).replace(".", "")
+        file_name_split = file.filename.split(".")
+        file_ext = file_name_split[len(file_name_split)-1]
+        file_path = f"api/uploads/{unique_file_name}.{file_ext}"
 
         return file_path
 
     
     @classmethod
     def get_image_class_name(cls, filepath):
+        """Get the class of the image"""
         try:
-            # Use PIL to open the image directly from the file path
             image = Image.open(filepath)
 
-            # image processing 
+            # image processing
             transform = transforms.Compose([
                 transforms.Resize((256,256)),
                 transforms.ToTensor(),
@@ -50,10 +54,9 @@ class ClassificationResult(db.Model):
             image = transform(image).unsqueeze(0)
             image = image_processor(image, do_rescale=False, do_resize=False, return_tensors="pt")
 
-            # load imodel
-            model = torch.load('mobilevit_s_tomato.pth', map_location=torch.device('cpu'))
 
-            # set model to evaluation mode
+            # Load the model and set it to evaluation
+            model = torch.load('mobilevit_s_tomato.pth', map_location=torch.device('cpu'))
             model.eval()
 
             # make prediction
@@ -64,17 +67,12 @@ class ClassificationResult(db.Model):
 
             # Apply softmax to convert logits to probabilities
             probabilities = F.softmax(logits, dim=1)
-
-            # single class label
             class_index = probabilities.argmax(dim=1).item()
 
             # get image class name
             class_dictionary = { 0: 'early blight', 1: 'late blight', 2: 'septoria leaf spot', 3: 'healthy'}
-
-            # get class label
             class_name = class_dictionary.get(class_index, 'Unknown Class')
 
-            #return class_name
             return class_name
 
         except Exception as e:

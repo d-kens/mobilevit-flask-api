@@ -1,29 +1,31 @@
 import os
 from flask_restx import Namespace, Resource
 from flask import request, send_file
-from ..models.classification_results import ClassificationResult
-from ..models.users import User
 from http import HTTPStatus
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_cors import cross_origin
+from ..models.classification_results import ClassificationResult
+from ..models.users import User
 
 
-## Allowed Image Extensions
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 # Create a namespace for image classification
 classification_namespace = Namespace('classification', description='image classification')
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
 @classification_namespace.route('/classify')
 class Classify(Resource):
-    #@classify_image_namespace.doc(responses={200: 'OK', 400: 'Bad Request'})
     #@jwt_required()
     @cross_origin()
     def post(self):
         """
-            classify image and save in database
+            Classify image and save in database
         """
         try:
             file = request.files.get('image')
@@ -74,9 +76,10 @@ class Classify(Resource):
 
 @classification_namespace.route('/classification_results/<int:user_id>')
 class GetUserClassificationResults(Resource):
+    @cross_origin()
     def get(self, user_id):
         """
-            get classification results for a specific user
+            Get classification results for a specific user
         """
         try:
             user=User.get_by_id(user_id)
@@ -90,7 +93,7 @@ class GetUserClassificationResults(Resource):
 
             if not results:
                 return {
-                    "message": "no previous classificatio results"
+                    "message": "No previous classification results"
                 }, HTTPStatus.NO_CONTENT
 
             # Construct a list of results with image_path, result_value, and timestamp

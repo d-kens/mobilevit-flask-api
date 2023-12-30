@@ -13,20 +13,17 @@ import os
 def create_app(config=config_dict['dev']):
     app=Flask(__name__, static_folder=os.path.abspath('api/uploads/'), static_url_path='/api/uploads')
 
-
     app.config.from_object(config)
 
     db.init_app(app)
-
     jwt = JWTManager(app)
-
-    api = Api(app) # This line creates a Flask-RESTx API instance associated with the Flask application app
-
     migrate = Migrate(app, db)
 
-    api.add_namespace(auth_namespace, path='/auth')
-    api.add_namespace(classification_namespace, path='/classification')
+    api = Api(app)
 
+    register_blueprints(app, api)
+
+    
     @app.shell_context_processor
     def make_shell_context():
         return {
@@ -36,3 +33,14 @@ def create_app(config=config_dict['dev']):
         }
 
     return app
+
+
+def register_blueprints(app, api):
+    
+    from .auth.views import auth_namespace
+    from .classification.views import classification_namespace
+
+
+    api.add_namespace(auth_namespace, path='/auth')
+    api.add_namespace(classification_namespace, path='/classification')
+
