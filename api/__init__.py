@@ -7,6 +7,7 @@ from .models.classification_results import ClassificationResult
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 import os
+from flask_cors import CORS
 
 def create_app(config=config_dict['dev']):
     app=Flask(__name__, static_folder=os.path.abspath('api/uploads/'), static_url_path='/api/uploads')
@@ -17,6 +18,8 @@ def create_app(config=config_dict['dev']):
     jwt = JWTManager(app)
     migrate = Migrate(app, db)
 
+    CORS(app)
+    
     api = Api(app)
 
     register_blueprints(app, api)

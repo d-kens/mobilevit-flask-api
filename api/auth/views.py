@@ -3,6 +3,7 @@ from flask import request, jsonify
 from ..models.users import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from http import HTTPStatus
+from flask_cors import cross_origin
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
 auth_namespace = Namespace('auth', description="authentication")
@@ -26,8 +27,8 @@ login_model = auth_namespace.model(
 @auth_namespace.route('/register')
 class Register(Resource):
     
+    @cross_origin()
     @auth_namespace.expect(register_model)
-    #@auth_namespace.marshal_with(register_model)
     def post(self):
         """
             create a new user account
@@ -68,6 +69,7 @@ class Register(Resource):
 
 @auth_namespace.route('/login')
 class Login(Resource):
+    @cross_origin()
     @auth_namespace.expect(login_model)
     def post(self):
         """
