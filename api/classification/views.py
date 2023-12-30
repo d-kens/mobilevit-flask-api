@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_cors import cross_origin
 from ..models.classification_results import ClassificationResult
 from ..models.users import User
+from math import ceil
 
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
@@ -64,7 +65,7 @@ class Classify(Resource):
 
             return {
                 'label': image_class_name,
-                'img_url':  image_url
+                'image_url':  image_url
             }, HTTPStatus.OK
         
         except Exception as e:
@@ -82,19 +83,31 @@ class GetUserClassificationResults(Resource):
             Get classification results for a specific user
         """
         try:
+            # check if user exists
             user=User.get_by_id(user_id)
-
             if not user:
                 return {
                     "error": "user not found"
                 }, HTTPStatus.NOT_FOUND
 
+            # query for results
             results = ClassificationResult.get_results_by_user_id(user_id)
 
             if not results:
                 return {
                     "message": "No previous classification results"
                 }, HTTPStatus.NO_CONTENT
+
+            
+
+            # Get pagination parameters from the request
+            page = request.args.get('page', default=1, type=int)
+            per_page = request.args.get('per_page', default=2, type=int)
+
+            total_pages = ceil(len(results) / per_page)
+
+            # Paginate the results
+            paginated_results = results[(page - 1) * per_page: page * per_page]
 
             # Construct a list of results with image_path, result_value, and timestamp
             results_list = [
@@ -103,11 +116,16 @@ class GetUserClassificationResults(Resource):
                     'result_value': result.result_value,
                     'timestamp': result.timestamp.isoformat() 
                 }
-                for result in results
+                for result in paginated_results
             ]
 
+            response_data = {
+                'results': results_list,
+                'total_pages': total_pages
+            }
 
-            return results_list, HTTPStatus.OK
+
+            return response_data, HTTPStatus.OK
         
         except Exception as e:
             # Log the exception for debugging
