@@ -22,8 +22,8 @@ def allowed_file(filename):
 
 @classification_namespace.route('/classify')
 class Classify(Resource):
-    #@jwt_required()
     @cross_origin()
+    @jwt_required()
     def post(self):
         """
             Classify image and save in database
@@ -32,10 +32,10 @@ class Classify(Resource):
             file = request.files.get('image')
 
             if file is None or file.filename == "":
-                return make_response(jsonify({"error": "no file"}), 400)
+                return {"error": "no file"}, HTTPStatus.BAD_REQUEST
 
             if not allowed_file(file.filename):
-                return make_response(jsonify({"error": "invalid file extension"}), 400)
+                return {"error": "invalid file extension"}, HTTPStatus.BAD_REQUEST
 
             # Generate file path
             file_path = ClassificationResult.generate_image_filepath(file)
@@ -44,17 +44,17 @@ class Classify(Resource):
             # get image class name
             image_class_name = ClassificationResult.get_image_class_name(file_path)
 
-            #! # get user id - Uncomment Later
-            # username = get_jwt_identity()
-            # current_user = User.query.filter_by(username=username).first()
-            # user_id = current_user.id
+            # get user id - Uncomment Later
+            username = get_jwt_identity()
+            current_user = User.query.filter_by(username=username).first()
+            user_id = current_user.id
              
 
             # save image in the database
             classification_result = ClassificationResult(
                 image_path = file_path,
                 result_value = image_class_name,
-                user_id = 1
+                user_id = user_id
             )
 
             classification_result.save()
@@ -78,6 +78,7 @@ class Classify(Resource):
 @classification_namespace.route('/classification_results/<int:user_id>')
 class GetUserClassificationResults(Resource):
     @cross_origin()
+    @jwt_required()
     def get(self, user_id):
         """
             Get classification results for a specific user

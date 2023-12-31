@@ -26,7 +26,6 @@ login_model = auth_namespace.model(
 
 @auth_namespace.route('/register')
 class Register(Resource):
-    
     @cross_origin()
     @auth_namespace.expect(register_model)
     def post(self):
@@ -53,17 +52,13 @@ class Register(Resource):
             user.save()
 
             # Convert the user object to a dictionary representation
-            user_dict = {
-                'id': user.id,
-                'firstname': user.firstname,
-                'lastname': user.lastname,
-                'username': user.username,
+            result = {
+                'message': 'user created successfully'
             }
 
-            return user_dict, HTTPStatus.CREATED
+            return result, HTTPStatus.CREATED
         
         except Exception as e:
-            logging.exception('An error occurred during user registration:')
             return {'message': 'An error occurred while processing the request'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
 
@@ -89,10 +84,13 @@ class Login(Resource):
 
                 response = {
                     'access_token': access_token,
-                    'refresh_token': refresh_token
+                    'refresh_token': refresh_token,
+                    'user_name': user.username,
+                    'id': user.id
                 }
 
                 return response, HTTPStatus.OK
+            
             return {'message': 'Invalid credentials'}, HTTPStatus.UNAUTHORIZED
         
         except Exception as e:
@@ -102,8 +100,9 @@ class Login(Resource):
 
 @auth_namespace.route('/refresh')
 class Refresh(Resource):
+    @cross_origin()
     @jwt_required(refresh=True)
-    def post(self):
+    def get(self):
         """
             refresh access token
         """
