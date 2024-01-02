@@ -42,7 +42,7 @@ class Classify(Resource):
             file.save(file_path)
 
             # get image class name
-            image_class_name = ClassificationResult.get_image_class_name(file_path)
+            image_class_name, probabilities = ClassificationResult.get_image_class_name(file_path)
 
             # get user id - Uncomment Later
             username = get_jwt_identity()
@@ -63,9 +63,16 @@ class Classify(Resource):
             server_url = request.url_root.rstrip('/')
             image_url = f"{server_url}/{file_path}"
 
+            
+            # get class probabilities
+            categories = ['Early Blight', 'Late Blight', 'Septoria Leaf Spot', 'Healthy']
+            label_probabilities = {category: round(probability.item(), 4) for category, probability in zip(categories, probabilities[0])}
+            
+
             return {
                 'label': image_class_name,
-                'image_url':  image_url
+                'image_url':  image_url,
+                'label_probabilities': label_probabilities
             }, HTTPStatus.OK
         
         except Exception as e:

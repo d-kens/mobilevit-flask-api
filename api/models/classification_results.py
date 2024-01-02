@@ -73,7 +73,7 @@ class ClassificationResult(db.Model):
             class_dictionary = { 0: 'early blight', 1: 'late blight', 2: 'septoria leaf spot', 3: 'healthy'}
             class_name = class_dictionary.get(class_index, 'Unknown Class')
 
-            return class_name
+            return class_name, probabilities
 
         except Exception as e:
             print(f"Error classifying image: {e}")
