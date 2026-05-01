@@ -60,8 +60,7 @@ class Classify(Resource):
             classification_result.save()
 
             # construct URL for the image
-            server_url = request.url_root.rstrip('/')
-            image_url = f"{server_url}/{file_path}"
+            image_url = self.get_image_url(file_path)
 
             
             # get class probabilities
