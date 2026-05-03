@@ -1,0 +1,19 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: #060d09;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(22, 163, 74, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(5, 46, 22, 0.15) 0%, transparent 50%);
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

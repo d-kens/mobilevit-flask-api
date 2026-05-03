@@ -20,7 +20,7 @@ def get_image_class_name(image_source):
     image = transform(image).unsqueeze(0)
     image = image_processor(image, do_rescale=False, do_resize=False, return_tensors="pt")
 
-    model = torch.load('mobilevit_s_tomato.pth', map_location=torch.device('cpu'))
+    model = torch.load('mobilevit_s_tomato.pth', map_location=torch.device('cpu'), weights_only=False)
     model.eval()
 
     with torch.no_grad():

@@ -1,0 +1,147 @@
+<div class="app-shell">
+  <!-- Ambient background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">🍃</span>
+      <span class="logo-text">LeafScan</span>
+    </div>
+    <p class="tagline">AI-Powered Tomato Disease Detection</p>
+  </header>
+
+  <!-- Main content -->
+  <main class="main" [class.has-results]="state() === 'result' || state() === 'error'">
+
+    <!-- Upload panel -->
+    <section class="panel upload-panel">
+      <div
+        class="drop-zone"
+        [class.drag-over]="dragOver()"
+        [class.has-image]="preview()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+        (click)="!preview() && openPicker()"
+      >
+        <input
+          #fileInput
+          type="file"
+          accept=".jpg,.jpeg,.png"
+          class="hidden-input"
+          (change)="onFileSelected($event)"
+        />
+
+        @if (preview()) {
+          <div class="image-wrapper">
+            <img [src]="preview()" alt="Selected leaf" class="preview-img" />
+            <div class="image-overlay">
+              <button class="change-btn" (click)="$event.stopPropagation(); openPicker()">
+                Change Image
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="drop-placeholder">
+            <div class="drop-icon-ring">
+              <span class="drop-icon">🌿</span>
+            </div>
+            <p class="drop-title">Drop a leaf image here</p>
+            <p class="drop-sub">or <span class="link">browse files</span></p>
+            <p class="drop-hint">JPG · PNG · up to any size</p>
+          </div>
+        }
+      </div>
+
+      <!-- Action bar -->
+      <div class="action-bar">
+        @if (preview() && state() !== 'loading') {
+          <button class="btn btn-primary" (click)="classify()">
+            <span class="btn-icon">🔬</span>
+            Analyse Leaf
+          </button>
+          <button class="btn btn-ghost" (click)="reset()">Clear</button>
+        }
+        @if (state() === 'loading') {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <span>Running model…</span>
+          </div>
+        }
+        @if (!preview() && state() !== 'loading') {
+          <p class="hint-text">Select an image to get started</p>
+        }
+      </div>
+    </section>
+
+    <!-- Results panel — only rendered when there is something to show -->
+    @if (state() === 'result' || state() === 'error') {
+      <section class="panel results-panel">
+
+        @if (state() === 'result' && result()) {
+          <div class="result-content">
+
+            <!-- Top verdict badge -->
+            <div
+              class="verdict-badge"
+              [style.--accent]="topResultMeta?.color ?? '#22c55e'"
+              [class.healthy]="topResultMeta?.severity === 'healthy'"
+              [class.diseased]="topResultMeta?.severity === 'disease'"
+            >
+              <span class="verdict-icon">{{ topResultMeta?.icon }}</span>
+              <div class="verdict-text">
+                <span class="verdict-label">{{ toDisplayLabel(result()!.label) }}</span>
+                <span class="verdict-sub">{{ topResultMeta?.severity === 'healthy' ? 'No disease detected' : 'Disease detected' }}</span>
+              </div>
+            </div>
+
+            <!-- Probability bars -->
+            <div class="probs-section">
+              <h3 class="probs-title">Confidence Breakdown</h3>
+              <div class="probs-list">
+                @for (item of sortedProbs; track item.label) {
+                  <div class="prob-row" [class.top]="item.value === sortedProbs[0].value">
+                    <div class="prob-meta">
+                      <span class="prob-icon">{{ item.icon }}</span>
+                      <span class="prob-label">{{ item.label }}</span>
+                      <span class="prob-pct" [style.color]="item.color">{{ pct(item.value) }}</span>
+                    </div>
+                    <div class="prob-bar-track">
+                      <div
+                        class="prob-bar-fill"
+                        [style.width]="pct(item.value)"
+                        [style.background]="item.color"
+                      ></div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <button class="btn btn-ghost scan-again" (click)="reset()">
+              ↩ Scan Another Leaf
+            </button>
+          </div>
+        }
+
+        @if (state() === 'error') {
+          <div class="error-state">
+            <span class="error-icon">⚠️</span>
+            <p class="error-msg">{{ errorMsg() }}</p>
+            <button class="btn btn-ghost" (click)="reset()">Try Again</button>
+          </div>
+        }
+
+      </section>
+    }
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Powered by MobileViT · Tomato Disease Classifier</p>
+  </footer>
+</div>
